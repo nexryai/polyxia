@@ -5,9 +5,8 @@ import { RouterLink, RouterView } from "vue-router";
 <template>
     <header>
         <nav>
-            <span class="nav-title">Quake</span>
-            <RouterLink class="item" exact-active-class="active" to="/">Home</RouterLink>
-            <RouterLink class="item" exact-active-class="active" to="/quake">地震一覧</RouterLink>
+            <span class="nav-title">Polyxia</span>
+            <RouterLink class="item" exact-active-class="active" to="/">QuakeNow</RouterLink>
             <RouterLink class="item" exact-active-class="active" to="/tsunami">津波情報</RouterLink>
         </nav>
         <div class="header-right">
