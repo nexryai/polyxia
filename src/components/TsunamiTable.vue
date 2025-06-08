@@ -81,7 +81,6 @@ const fetchTsunamiData = async (id: string, isDebug = false): Promise<TsunamiDat
         if (response.status != 200) {
             if (response.status == 204) {
                 console.warn(`Event ID ${id} should be ignored (no tsunami data)`);
-                isIgnored.value = true;
                 return {
                     expire: null,
                     issue: null,
@@ -122,6 +121,11 @@ onMounted(async () => {
 
     isDummyData.value = props.isDebug;
     const tsunamiData = await fetchTsunamiData(props.eventId, props.isDebug);
+    if (tsunamiData.ignored) {
+        isIgnored.value = true;
+        isLoading.value = false;
+        return;
+    }
 
     issue.value = tsunamiData.issue;
     isCancelled.value = tsunamiData.cancelled;
