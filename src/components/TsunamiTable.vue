@@ -81,12 +81,9 @@ const fetchTsunamiData = async (id: string, isDebug = false): Promise<TsunamiDat
         if (response.status != 200) {
             if (response.status == 204) {
                 console.warn(`Event ID ${id} should be ignored (no tsunami data)`);
+                // @ts-ignore
                 return {
-                    expire: null,
-                    issue: null,
-                    cancelled: false,
                     ignored: true,
-                    areas: []
                 };
             }
 
