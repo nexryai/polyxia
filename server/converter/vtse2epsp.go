@@ -8,6 +8,10 @@ import (
 	"github.com/nexryai/polyxia/server/jmaseis"
 )
 
+var (
+	ErrSlightSeaLevelChangeIsNotSupported = errors.New("slight sea-level change is not supported")
+)
+
 func Vtse2Epsp(vtse jmaseis.Report) (*epsp.JMATsunami, error) {
 	// "取消" は未対応
 	if vtse.Head.InfoType == "取消" {

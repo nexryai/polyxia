@@ -30,6 +30,10 @@ func GetEventDetailsJson(eventId string, isDebug bool) (*string, error) {
 	}
 
 	data, err := io.ReadAll(respReader)
+	if err != nil {
+		log.Printf("%s read error: %#v", eventId, err)
+		return nil, fmt.Errorf("failed to read data for %s: %w", eventId, err)
+	}
 
 	report := &jmaseis.Report{}
 	err = xml.Unmarshal(data, &report)
@@ -41,7 +45,8 @@ func GetEventDetailsJson(eventId string, isDebug bool) (*string, error) {
 		// 津波
 		jmaTsunami, err := converter.Vtse2Epsp(*report)
 		if err != nil {
-			log.Fatalf("%s convert error: %#v", eventId, err)
+			log.Printf("%s convert error: %#v", eventId, err)
+			return nil, err
 		}
 
 		// 検証
@@ -49,20 +54,21 @@ func GetEventDetailsJson(eventId string, isDebug bool) (*string, error) {
 		for _, err := range errors {
 			_, ok := err.(converter.ValidationError)
 			if ok && !force {
-				log.Fatalf("%s has validation errors: %#v", eventId, errors)
+				log.Printf("%s has validation errors: %#v", eventId, errors)
 			}
 		}
 
 		for _, err := range errors {
 			_, ok := err.(converter.ValidationWarning)
 			if ok && !force && !ignoreWarning {
-				log.Fatalf("%s has validation warnings: %#v", eventId, errors)
+				log.Printf("%s has validation warnings: %#v", eventId, errors)
 			}
 		}
 
 		data, err = json.Marshal(jmaTsunami)
 		if err != nil {
-			log.Fatalf("%s JSON conversion error: %#v", eventId, err)
+			log.Printf("%s JSON conversion error: %#v", eventId, err)
+			return nil, err
 		}
 
 		jsonString := string(data)
@@ -117,6 +123,4 @@ func GetEventDetailsJson(eventId string, isDebug bool) (*string, error) {
 
 		return &(jsonString), nil
 	}
-
-	return nil, nil
 }
