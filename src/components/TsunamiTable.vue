@@ -15,6 +15,7 @@ type TsunamiData = {
     expire: string | null;
     issue: TsunamiIssue;
     cancelled: boolean;
+    ignored?: boolean; // 無視するイベント（若干の海面変動）
     areas: Area[];
 };
 
@@ -58,6 +59,7 @@ const warningAreas = ref<Area[]>([]);
 const watchAreas = ref<Area[]>([]);
 const unknownAreas = ref<Area[]>([]);
 const isCancelled = ref(false);
+const isIgnored = ref(false);
 
 const mapError = ref(false);
 const fatalError = ref(false);
@@ -77,6 +79,18 @@ const fetchTsunamiData = async (id: string, isDebug = false): Promise<TsunamiDat
         );
 
         if (response.status != 200) {
+            if (response.status == 204) {
+                console.warn(`Event ID ${id} should be ignored (no tsunami data)`);
+                isIgnored.value = true;
+                return {
+                    expire: null,
+                    issue: null,
+                    cancelled: false,
+                    ignored: true,
+                    areas: []
+                };
+            }
+
             throw new Error(`Status code was not 200: ${response.status}`);
         }
 
@@ -172,7 +186,7 @@ onMounted(async () => {
 </script>
 
 <template>
-    <div class="view">
+    <div class="view" v-if="!isIgnored">
         <div id="map">
             <div class="loading" v-if="isLoading || mapIsLoading">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-loader-3">
@@ -299,6 +313,16 @@ onMounted(async () => {
                             </p>
                         </div>
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div v-else>
+        <div class="grades-table">
+            <div class="full-message">
+                <div>
+                    <p>このイベントは無視されました。</p>
+                    <p>津波の影響はありません。</p>
                 </div>
             </div>
         </div>
