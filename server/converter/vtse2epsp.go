@@ -31,7 +31,7 @@ func Vtse2Epsp(vtse jmaseis.Report) (*epsp.JMATsunami, error) {
 
 	// キャンセルでもないのにエリアがないものは、若干の海面変動のみのため、 EPSP のデータ化対象外
 	if jmaTsunami.Cancelled == false && len(jmaTsunami.Areas) == 0 {
-		return nil, errors.New("Slight sea-level change is not supported.\n")
+		return nil, ErrSlightSeaLevelChangeIsNotSupported
 	}
 
 	return &jmaTsunami, nil
