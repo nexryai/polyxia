@@ -1,2 +1,2 @@
 # quake
-WIP: 災害情報ビューワー for Marinus Public Alerts Subsystem
+Public URL: [q.sda1.net](https://q.sda1.net)
