@@ -123,7 +123,7 @@ const fetchQuakeData = async (id: string, isDebug = false): Promise<EarthquakeDa
 const render = async () => {
     const dispHypocenter = !eventId.value.includes("_VXSE51");
 
-    // GeoJSON データを取得（既にマップが描画されてれば不要なのでここではawaitしない）
+    // GeoJSON データを取得（しばらく使わないのでここではawaitしない）
     const geojson = fetchMapData();
 
     // Debug flag
@@ -304,16 +304,16 @@ const render = async () => {
 
                 // 対象エリアの中心を取得
                 geoJsonLayer?.eachLayer(layer => {
-                // @ts-ignore
+                    //@ts-ignore
                     if (layer.feature.properties.code === targetCode) {
-                    // @ts-ignore
+                        // @ts-ignore
                         targetCenter = layer.getBounds().getCenter();
                     }
                 });
 
-                // ズーム倍率を手動で設定
+                // ズーム倍率を設定
                 if (targetCenter) {
-                    const zoomLevel = 6.5; // 任意のズームレベルに変更
+                    const zoomLevel = 6.5;
                     map.setView(targetCenter, zoomLevel);
                 }
             }
