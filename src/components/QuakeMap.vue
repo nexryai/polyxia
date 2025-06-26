@@ -123,8 +123,8 @@ const fetchQuakeData = async (id: string, isDebug = false): Promise<EarthquakeDa
 const render = async () => {
     const dispHypocenter = !eventId.value.includes("_VXSE51");
 
-    // GeoJSON データ
-    const geojson = await fetchMapData();
+    // GeoJSON データを取得（既にマップが描画されてれば不要なのでここではawaitしない）
+    const geojson = fetchMapData();
 
     // Debug flag
     isDummyData.value = props.isDebug;
@@ -218,12 +218,20 @@ const render = async () => {
         }
     });
 
+    const getFeatureStyle = (feature: any) => {
+        return {
+            color: "gray",  // 境界線の色
+            weight: 2,
+            opacity: 0.7,
+            fillColor: areaScaleMap.has(feature!.properties.code) ? getQuakeScaleColor(areaScaleMap.get(feature!.properties.code) || 0) : "white",
+            fillOpacity: 1
+        };
+    };
+
     mapIsLoading.value = true;
     isLoading.value = false;
 
     try {
-        const shouldClearGeoJsonLayer = isForeignQuake && mapInitialized;
-
         map ||= L.map("map", {
             attributionControl: false,
             zoomControl: false,
@@ -235,12 +243,18 @@ const render = async () => {
         );
 
         // Markerと塗りつぶしをクリア
-        map.eachLayer((layer) => {
+        mapInitialized && map.eachLayer((layer) => {
             if (layer instanceof L.Marker || layer instanceof L.CircleMarker) {
                 map?.removeLayer(layer);
             }
 
-            if (shouldClearGeoJsonLayer && layer instanceof L.GeoJSON) {
+            // isForeignQuakeではないならタイトルレイヤーも削除
+            if (!isForeignQuake && layer instanceof L.TileLayer) {
+                map?.removeLayer(layer);
+            }
+
+            // isForeignQuakeならGeoJSONレイヤーを削除
+            if (isForeignQuake && layer instanceof L.GeoJSON) {
                 map?.removeLayer(layer);
             }
         });
@@ -251,16 +265,8 @@ const render = async () => {
             }).addTo(map);
         } else {
             // GeoJSON をマップに追加
-            const geoJsonLayer = !mapInitialized ? L.geoJSON(geojson, {
-                style: function (feature) {
-                    return {
-                        color: "gray",  // 境界線の色
-                        weight: 2,
-                        opacity: 0.7,
-                        fillColor: areaScaleMap.has(feature!.properties.code) ? getQuakeScaleColor(areaScaleMap.get(feature!.properties.code) || 0) : "white",
-                        fillOpacity: 1
-                    };
-                },
+            const geoJsonLayer = !mapInitialized ? L.geoJSON(await geojson, {
+                style: getFeatureStyle,
                 onEachFeature: (feature, layer) => {
                     if (feature.properties && feature.properties.name) {
                         layer.bindPopup(feature.properties.name);
@@ -276,6 +282,9 @@ const render = async () => {
                         found = layer;
                     }
                 });
+
+                // foundのstyleを更新
+                found?.setStyle(getFeatureStyle);
 
                 return found;
             })();
