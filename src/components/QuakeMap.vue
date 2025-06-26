@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import L from "leaflet";
-import { ref, onMounted, computed } from "vue";
+import { ref, onMounted, computed, watch } from "vue";
 
 import "leaflet/dist/leaflet.css";
 import { getQuakeScaleColor } from "@/color.ts";
@@ -52,6 +52,8 @@ enum TsunamiStatus {
     NONE
 }
 
+const eventId = ref(props.eventId);
+
 const tsunamiStatusStyle = computed(() => {
     switch (tsunamiStatus.value) {
         case TsunamiStatus.WARNING:
@@ -80,9 +82,22 @@ const fatalError = ref(false);
 const isLoading = ref(true);
 const mapIsLoading = ref(false);
 
+let mapInitialized = false;
+let mapDataCache: any = null;
+let map: L.Map | null = null;
+
 const fetchMapData = async () => {
+    if (mapDataCache) {
+        return mapDataCache;
+    }
+
     const response = await fetch("/JP20250304.geojson");
-    return await response.json();
+    if (response.status != 200) {
+        throw new Error(`Status code was not 200: ${response.status}`);
+    }
+
+    mapDataCache = await response.json();
+    return mapDataCache;
 };
 
 const fetchQuakeData = async (id: string, isDebug = false): Promise<EarthquakeData> => {
@@ -105,15 +120,15 @@ const fetchQuakeData = async (id: string, isDebug = false): Promise<EarthquakeDa
     }
 };
 
-onMounted(async () => {
-    const dispHypocenter = !props.eventId.includes("_VXSE51");
+const render = async () => {
+    const dispHypocenter = !eventId.value.includes("_VXSE51");
 
     // GeoJSON データ
     const geojson = await fetchMapData();
 
     // Debug flag
     isDummyData.value = props.isDebug;
-    const quakeData = await fetchQuakeData(props.eventId, props.isDebug);
+    const quakeData = await fetchQuakeData(eventId.value, props.isDebug);
 
     quakeDateTimeLabel.value = quakeData.earthquake.time;
     quakeScale.value = quakeData.earthquake.maxScale;
@@ -207,18 +222,36 @@ onMounted(async () => {
     isLoading.value = false;
 
     try {
-        const map = L.map("map", {
+        const shouldClearGeoJsonLayer = isForeignQuake && mapInitialized;
+
+        map ||= L.map("map", {
             attributionControl: false,
-            zoomControl: false
-        }).setView([quakeData.earthquake.hypocenter.latitude, quakeData.earthquake.hypocenter.longitude], 7);
+            zoomControl: false,
+        });
+
+        map.setView(
+            [quakeData.earthquake.hypocenter.latitude, quakeData.earthquake.hypocenter.longitude],
+            7
+        );
+
+        // Markerと塗りつぶしをクリア
+        map.eachLayer((layer) => {
+            if (layer instanceof L.Marker || layer instanceof L.CircleMarker) {
+                map?.removeLayer(layer);
+            }
+
+            if (shouldClearGeoJsonLayer && layer instanceof L.GeoJSON) {
+                map?.removeLayer(layer);
+            }
+        });
 
         if (isForeignQuake) {
             L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
                 attribution: "© OpenStreetMap contributors",
             }).addTo(map);
         } else {
-        // GeoJSON をマップに追加
-            const geoJsonLayer = L.geoJSON(geojson, {
+            // GeoJSON をマップに追加
+            const geoJsonLayer = !mapInitialized ? L.geoJSON(geojson, {
                 style: function (feature) {
                     return {
                         color: "gray",  // 境界線の色
@@ -236,7 +269,16 @@ onMounted(async () => {
                 pointToLayer: (feature, latlng) => {
                     return L.circleMarker(latlng, { radius: 8, color: "red" });
                 },
-            }).addTo(map);
+            }).addTo(map) : (() => {
+                let found: L.GeoJSON | undefined;
+                map.eachLayer(layer => {
+                    if (layer instanceof L.GeoJSON) {
+                        found = layer;
+                    }
+                });
+
+                return found;
+            })();
 
             if (!dispHypocenter) {
                 let maxScale = -Infinity;
@@ -252,7 +294,7 @@ onMounted(async () => {
                 }
 
                 // 対象エリアの中心を取得
-                geoJsonLayer.eachLayer(layer => {
+                geoJsonLayer?.eachLayer(layer => {
                 // @ts-ignore
                     if (layer.feature.properties.code === targetCode) {
                     // @ts-ignore
@@ -281,11 +323,39 @@ onMounted(async () => {
                 })
             }).addTo(map);
         }
+
+        mapInitialized = true;
     } catch(e) {
         mapError.value = true;
         console.error(`Failed to load map: ${e}`);
     } finally {
         mapIsLoading.value = false;
+    }
+};
+
+onMounted(async ()=>{
+    try {
+        await render();
+    } catch (e) {
+        console.error(`Failed to render map: ${e}`);
+        fatalError.value = true;
+    }
+});
+
+watch(() => props.eventId, async (newId) => {
+    if (newId) {
+        eventId.value = newId;
+        isLoading.value = true;
+        mapIsLoading.value = true;
+        mapError.value = false;
+        fatalError.value = false;
+
+        try {
+            await render();
+        } catch (e) {
+            console.error(`Failed to render map on event ID change: ${e}`);
+            fatalError.value = true;
+        }
     }
 });
 </script>
