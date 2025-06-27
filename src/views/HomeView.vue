@@ -46,9 +46,12 @@ const updateEventId = async (index: number): Promise<void> => {
 
 const shareCurrentURL = async (): Promise<void> => {
     const url = new URL(window.location.href);
+    url.searchParams.get("eventId") ?? url.searchParams.set("eventId", eventId.value);
 
     // Firefoxでは　navigator.shareがサポートされていないため、必要に応じてClipboard APIにフォールバック
-    "share" in navigator ? navigator.share({ url: url.toString() }) : (navigator as Navigator).clipboard.writeText(url.toString());
+    "share" in navigator
+        ? navigator.share({ url: url.toString() })
+        : (navigator as Navigator).clipboard.writeText(url.toString());
 };
 
 onMounted(async () => {
