@@ -123,11 +123,24 @@ onMounted(async () => {
     justify-content: center;
     margin-top: 20px;
 
-    button {
+    & button {
         margin: 0 10px;
         padding: 10px 20px;
         font-size: 16px;
         cursor: pointer;
+
+        border: none;
+        border-radius: 5px;
+        background-color: #eaeaea;
+    }
+
+    & button:disabled {
+        cursor: not-allowed;
+        opacity: 0.5;
+    }
+
+    & button:hover:not(:disabled) {
+        background-color: #cecece;
     }
 }
 </style>
