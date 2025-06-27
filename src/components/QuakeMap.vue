@@ -232,7 +232,7 @@ const render = async () => {
     isLoading.value = false;
 
     try {
-        map ||= L.map("map", {
+        map ??= L.map("map", {
             attributionControl: false,
             zoomControl: false,
         });
