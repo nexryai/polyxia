@@ -66,8 +66,8 @@ const fatalError = ref(false);
 const isLoading = ref(true);
 const mapIsLoading = ref(false);
 
-const fetchMapData = async () => {
-    const response = await fetch("/JP20250311T.geojson");
+const fetchMapData = async (signal: AbortSignal) => {
+    const response = await fetch("/JP20250311T.geojson", { signal });
     return await response.json();
 };
 
@@ -114,13 +114,19 @@ const getColorByGrade = (grade: TsunamiGrade): string => {
 
 
 onMounted(async () => {
-    const geojson = await fetchMapData();
+    //パフォーマンス改善のためここではawaitしない
+    const abortController = new AbortController();
+    const geojson = fetchMapData(abortController.signal);
 
     isDummyData.value = props.isDebug;
     const tsunamiData = await fetchTsunamiData(props.eventId, props.isDebug);
     if (tsunamiData.ignored) {
         isIgnored.value = true;
         isLoading.value = false;
+
+        // abort fetching
+        abortController.abort("This event should be ignored");
+
         return;
     }
 
@@ -158,7 +164,7 @@ onMounted(async () => {
             zoomControl: false
         }).setView([35.7894, 136], 4);
 
-        L.geoJSON(geojson, {
+        L.geoJSON(await geojson, {
             style: function (feature) {
                 return {
                     // グレードによって色分け
