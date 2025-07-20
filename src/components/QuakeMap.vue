@@ -121,6 +121,7 @@ const fetchQuakeData = async (id: string, isDebug = false): Promise<EarthquakeDa
 };
 
 const render = async () => {
+    let shouldClearMap = mapInitialized;
     const dispHypocenter = !eventId.value.includes("_VXSE51");
 
     // GeoJSON データを取得（しばらく使わないのでここではawaitしない）
@@ -208,6 +209,12 @@ const render = async () => {
             default: tsunamiStatusLabel.value = "津波情報（海外）の取得に失敗しました";
                 tsunamiStatus.value = TsunamiStatus.NOTICE;
         }
+    } else {
+        if (isForeignQuake) {
+            isForeignQuake = false;
+            mapInitialized = false;
+            shouldClearMap = true;
+        }
     }
 
     // areaCodeごとの最大scaleを求める
@@ -247,7 +254,7 @@ const render = async () => {
         );
 
         // Markerと塗りつぶしをクリア
-        mapInitialized && map.eachLayer((layer) => {
+        shouldClearMap && map.eachLayer((layer) => {
             if (layer instanceof L.Marker || layer instanceof L.CircleMarker) {
                 map?.removeLayer(layer);
             }
