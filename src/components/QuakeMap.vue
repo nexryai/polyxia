@@ -138,6 +138,10 @@ const render = async () => {
     depth.value = dispHypocenter ? quakeData.earthquake.hypocenter.depth : "?";
     hypocenterLabel.value = dispHypocenter ? quakeData.earthquake.hypocenter.name : "調査中";
 
+    if (depth.value === -1) {
+        depth.value = "?";
+    }
+
     //quakeData.earthquake.domesticTsunami = "Watch";
 
     switch (quakeData.earthquake.domesticTsunami) {
