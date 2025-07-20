@@ -75,6 +75,7 @@ const quakeScale = ref(0);
 const tsunamiStatusLabel = ref("");
 const tsunamiStatus = ref(TsunamiStatus.UNKNOWN);
 const magnitude = ref<number | string>(0);
+const depth = ref<number | string>(0);
 const hypocenterLabel = ref("不明");
 
 const mapError = ref(false);
@@ -134,6 +135,7 @@ const render = async () => {
     quakeDateTimeLabel.value = quakeData.earthquake.time;
     quakeScale.value = quakeData.earthquake.maxScale;
     magnitude.value = dispHypocenter ? quakeData.earthquake.hypocenter.magnitude : "?";
+    depth.value = dispHypocenter ? quakeData.earthquake.hypocenter.depth : "?";
     hypocenterLabel.value = dispHypocenter ? quakeData.earthquake.hypocenter.name : "調査中";
 
     //quakeData.earthquake.domesticTsunami = "Watch";
@@ -408,8 +410,8 @@ watch(() => props.eventId, async (newId) => {
 
             <div class="hypocenter">
                 <span class="hypocenter-label">震源 {{ hypocenterLabel }}</span> <br>
-                <span class="time-label">{{ quakeDateTimeLabel }}</span><span class="magnitude-label">M{{ magnitude
-                    }}</span>
+                <span class="time-label">{{ quakeDateTimeLabel }}</span>
+                <span class="magnitude-and-depth-label">M{{ magnitude }} - {{ depth }} KM</span>
             </div>
         </div>
         <div class="quake-info" v-if="!isLoading">
@@ -501,7 +503,7 @@ watch(() => props.eventId, async (newId) => {
             margin-right: 24px;
         }
 
-        & .magnitude-label {
+        & .magnitude-and-depth-label {
             font-size: 20px;
             font-weight: bold;
         }
@@ -516,6 +518,17 @@ watch(() => props.eventId, async (newId) => {
         }
     }
 
+}
+
+@media (max-width: 512px) {
+    .quake-info {
+        flex-direction: column;
+
+        & .hypocenter {
+            text-align: left;
+            margin-top: 32px;
+        }
+    }
 }
 
 @keyframes rotate-z {
