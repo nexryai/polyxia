@@ -197,6 +197,10 @@ const render = async () => {
                 tsunamiStatusLabel.value = "インド洋の広域で津波が予想されます";
                 tsunamiStatus.value = TsunamiStatus.WARNING;
                 break;
+            case "WarningNearby":
+                tsunamiStatusLabel.value = "周辺の地域で津波が予想されます";
+                tsunamiStatus.value = TsunamiStatus.WARNING;
+                break;
             case "Potential":
                 tsunamiStatusLabel.value = "この規模の地震では津波の可能性があります";
                 tsunamiStatus.value = TsunamiStatus.NOTICE;
