@@ -399,6 +399,7 @@ onMounted(async () => {
 
 .grades-table {
     margin: 16px;
+    min-width: 50%;
 
     & .info {
         display: flex;
