@@ -228,7 +228,7 @@ onMounted(async () => {
             </div>
             <div class="full-message">
                 <div v-if="isCancelled">
-                    <span>津波警報は解除されました</span>
+                    <span>津波注意報/警報は解除されました</span>
                 </div>
             </div>
             <div class="grade" v-if="majorWarningAreas.length > 0">
