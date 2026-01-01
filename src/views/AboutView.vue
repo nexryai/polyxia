@@ -4,7 +4,7 @@
             <h2>About this app</h2>
             <p>気象庁から地震・津波に関する情報を取得し、表示するウェブアプリです。</p>
             <div class="copyright">
-                <p>©2024-2025 nexryai </p>
+                <p>©2024-2026 nexryai </p>
                 <p>災害情報/マップデータ: ©<a href='https://www.jma.go.jp/jma/index.html' target='_blank'>気象庁</a></p>
                 <p>
                     マップデータ（遠地地震用）: ©<a href='https://openstreetmap.org' target='_blank'>OpenStreetMap</a>
