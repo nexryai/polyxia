@@ -1,10 +1,10 @@
-name: ESLint CI
+name: Lint CI
 on: [push, pull_request]
 permissions: {}
 
 jobs:
     eslint:
-        name: 🔍 ESLint test
+        name: 🔍 Biome test
         runs-on: ubuntu-latest
         permissions:
             contents: read
@@ -27,5 +27,5 @@ jobs:
             - name: Install dependencies
               run: pnpm install
 
-            - name: Check with ESLint
-              run: pnpm eslint
+            - name: Check with Biome
+              run: pnpm lint
