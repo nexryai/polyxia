@@ -1,20 +1,12 @@
 {
-    "name": "Quake Dev",
-    "image": "node:22",
+    "name": "Polyxia Dev",
+    "image": "node:24",
     "features": {
         "ghcr.io/devcontainers-extra/features/pnpm:2": {},
         "ghcr.io/devcontainers/features/go:1": {
             "version": "latest"
         }
     },
-    "runArgs": [
-        "--name",
-        "quake-dev",
-        "-p",
-        "127.0.0.1:5173:5173",
-        "--user",
-        "node"
-    ],
     "workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind",
     "workspaceFolder": "/workspace",
     "remoteUser": "node",
@@ -23,17 +15,44 @@
         "vscode": {
             "extensions": [
                 "Vue.volar",
-                "dbaeumer.vscode-eslint",
-                "EditorConfig.EditorConfig",
+                "biomejs.biome",
                 "golang.go"
             ],
             "settings": {
                 "editor.linkedEditing": true,
-                /* FIXME: 本当は使いたいけどやたら改行してきてキモいので無効化する */
-                "editor.formatOnPaste": false,
-                "editor.formatOnSave": false,
+                "editor.formatOnPaste": true,
+                "editor.formatOnSave": true,
                 "vue.server.hybridMode": true,
-                "html.format.wrapLineLength": 0
+                "html.format.wrapLineLength": 0,
+
+                "editor.codeActionsOnSave": {
+                    "source.organizeImports.biome": "explicit"
+                },
+
+                "[typescript]": {
+                    "editor.defaultFormatter": "biomejs.biome"
+                },
+                "[typescriptreact]": {
+                    "editor.defaultFormatter": "biomejs.biome"
+                },
+                "[svelte]": {
+                    "editor.defaultFormatter": "biomejs.biome"
+                },
+                "[json]": {
+                    "editor.defaultFormatter": "biomejs.biome"
+                },
+                "[javascript]": {
+                    "editor.defaultFormatter": "biomejs.biome"
+                },
+                "[javascriptreact]": {
+                    "editor.defaultFormatter": "biomejs.biome"
+                },
+
+                "[go]": {
+                    "editor.defaultFormatter": "golang.go"
+                },
+
+                "biome.lsp.bin": "pnpm biome"
             }
         }
     }
