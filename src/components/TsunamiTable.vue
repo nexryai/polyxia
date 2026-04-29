@@ -1,6 +1,7 @@
 <script setup lang="ts">
+    import { onMounted, ref } from "vue";
+
     import L from "leaflet";
-    import { ref, onMounted } from "vue";
 
     import TsunamiHazardSign from "./icons/TsunamiHazardSign.vue";
 
@@ -74,8 +75,8 @@
         try {
             const response = await fetch(!isDebug ? `https://quake-jade.vercel.app/api/events/details?id=${id}` : `https://quake-jade.vercel.app/api/events/details?id=${id}&debug=dummy`);
 
-            if (response.status != 200) {
-                if (response.status == 204) {
+            if (response.status !== 200) {
+                if (response.status === 204) {
                     console.warn(`Event ID ${id} should be ignored (no tsunami data)`);
                     // @ts-expect-error
                     return {
@@ -162,6 +163,7 @@
             L.geoJSON(await geojson, {
                 style: (feature) => ({
                     // グレードによって色分け
+                    // biome-ignore lint/style/noNonNullAssertion: leafletが悪い
                     color: getColorByGrade(gradeMap.get(feature!.properties.code) ?? TsunamiGrade.Unknown),
                     weight: 2.5,
                     opacity: 0.7,
@@ -169,10 +171,11 @@
                     fillOpacity: 1,
                 }),
                 onEachFeature: (feature, layer) => {
-                    if (feature.properties && feature.properties.name) {
+                    if (feature.properties?.name) {
                         layer.bindPopup(feature.properties.name);
                     }
                 },
+                // biome-ignore lint/correctness/noUnusedFunctionParameters: leafletが悪い
                 pointToLayer: (feature, latlng) => {
                     return L.circleMarker(latlng, { radius: 8, color: "red" });
                 },

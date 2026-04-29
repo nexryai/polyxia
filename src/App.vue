@@ -1,4 +1,5 @@
 <script setup lang="ts">
+    // biome-ignore assist/source/organizeImports: 誤判定
     import { RouterLink, RouterView } from "vue-router";
 </script>
 

@@ -1,13 +1,16 @@
 <script setup lang="ts">
+    import { computed, onMounted, ref, watch } from "vue";
+
     import L from "leaflet";
-    import { ref, onMounted, computed, watch } from "vue";
 
     import "leaflet/dist/leaflet.css";
+
     import { getQuakeScaleColor } from "@/color.ts";
     import QuakeScaleIcon from "@/components/core/QuakeScaleIcon.vue";
     import UndrawError from "@/components/images/UndrawError.vue";
 
     const props = defineProps<{
+        // biome-ignore lint/correctness/noVueDuplicateKeys: たぶん誤判定
         eventId: string;
         isDebug?: boolean;
     }>();
@@ -93,7 +96,7 @@
         }
 
         const response = await fetch("/JP20250304.geojson");
-        if (response.status != 200) {
+        if (response.status !== 200) {
             throw new Error(`Status code was not 200: ${response.status}`);
         }
 
@@ -105,7 +108,7 @@
         try {
             const response = await fetch(!isDebug ? `https://quake-jade.vercel.app/api/events/details?id=${id}` : `https://quake-jade.vercel.app/api/events/details?id=${id}&debug=dummy`);
 
-            if (response.status != 200) {
+            if (response.status !== 200) {
                 throw new Error(`Status code was not 200: ${response.status}`);
             }
 
@@ -170,14 +173,14 @@
         }
 
         // 国内でWarningがあるなら海外からの津波は無視
-        if (quakeData.earthquake.foreignTsunami != "None" && quakeData.earthquake.foreignTsunami != "Unknown" && tsunamiStatus.value != TsunamiStatus.WARNING) {
-            if (quakeData.earthquake.maxScale == -1) {
+        if (quakeData.earthquake.foreignTsunami !== "None" && quakeData.earthquake.foreignTsunami !== "Unknown" && tsunamiStatus.value !== TsunamiStatus.WARNING) {
+            if (quakeData.earthquake.maxScale === -1) {
                 isForeignQuake = true;
             }
 
             switch (quakeData.earthquake.foreignTsunami) {
                 case "Checking":
-                    if (tsunamiStatus.value != TsunamiStatus.NOTICE) {
+                    if (tsunamiStatus.value !== TsunamiStatus.NOTICE) {
                         // NOTICEレベルの通知があるならそっちを優先する
                         tsunamiStatusLabel.value = "津波への影響は調査中です。";
                     }
@@ -239,7 +242,7 @@
                 color: "gray", // 境界線の色
                 weight: 2,
                 opacity: 0.7,
-                fillColor: areaScaleMap.has(feature!.properties.code) ? getQuakeScaleColor(areaScaleMap.get(feature!.properties.code) || 0) : "white",
+                fillColor: areaScaleMap.has(feature?.properties.code) ? getQuakeScaleColor(areaScaleMap.get(feature?.properties.code) || 0) : "white",
                 fillOpacity: 1,
             };
         };
@@ -283,11 +286,11 @@
                     ? L.geoJSON(await geojson, {
                           style: getFeatureStyle,
                           onEachFeature: (feature, layer) => {
-                              if (feature.properties && feature.properties.name) {
+                              if (feature.properties?.name) {
                                   layer.bindPopup(feature.properties.name);
                               }
                           },
-                          pointToLayer: (feature, latlng) => {
+                          pointToLayer: (_feature, latlng) => {
                               return L.circleMarker(latlng, { radius: 8, color: "red" });
                           },
                       }).addTo(map)
@@ -530,7 +533,7 @@
             border-radius: 10px;
 
             & .tsunami-label {
-                font-weight: bold !important;
+                font-weight: bold;
             }
         }
     }

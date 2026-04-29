@@ -1,5 +1,5 @@
 <script setup lang="ts">
-    import { ref, onMounted } from "vue";
+    import { onMounted, ref } from "vue";
 
     import QuakeMap from "@/components/QuakeMap.vue";
 
@@ -88,6 +88,7 @@
         <div>
             <div v-if="!isLoading" class="controls">
                 <button
+                    type="button"
                     :disabled="!isSeekableToNext"
                     @click="async () => {
                         currentEventIndex--;
@@ -100,6 +101,7 @@
                     </svg>
                 </button>
                 <button
+                    type="button"
                     :disabled="isLoading"
                     @click="async () => {
                         await shareCurrentURL();
@@ -115,6 +117,7 @@
                     </svg>
                 </button>
                 <button
+                    type="button"
                     :disabled="!isSeekableToPrev"
                     @click="async () => {
                         currentEventIndex++;
