@@ -13,11 +13,7 @@
     "overrideCommand": true,
     "customizations": {
         "vscode": {
-            "extensions": [
-                "Vue.volar",
-                "biomejs.biome",
-                "golang.go"
-            ],
+            "extensions": ["Vue.volar", "biomejs.biome", "golang.go"],
             "settings": {
                 "editor.linkedEditing": true,
                 "editor.formatOnPaste": true,
