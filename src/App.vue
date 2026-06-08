@@ -65,6 +65,14 @@
                 font-weight: bold;
             }
         }
+
+        &.tsunami-watch {
+            color: #8f0000;
+        }
+
+        &.tsunami-warning {
+            color: #8f0000;
+        }
     }
 
     #view {

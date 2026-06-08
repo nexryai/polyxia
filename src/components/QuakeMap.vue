@@ -71,6 +71,7 @@
     });
 
     let isForeignQuake = false;
+    const headerCssClass = ref<string | null>(null);
 
     const isDummyData = ref(false);
     const quakeDateTimeLabel = ref("");
@@ -104,6 +105,18 @@
         return mapDataCache;
     };
 
+    const updateAppHeaderClass = (className: string | null) => {
+        const header = document.querySelector("header");
+        if (!header) {
+            return;
+        }
+
+        header.classList.remove("tsunami-watch", "tsunami-warning");
+        if (className) {
+            header.classList.add(className);
+        }
+    };
+
     const fetchQuakeData = async (id: string, isDebug = false): Promise<EarthquakeData> => {
         try {
             const response = await fetch(!isDebug ? `https://quake-jade.vercel.app/api/events/details?id=${id}` : `https://quake-jade.vercel.app/api/events/details?id=${id}&debug=dummy`);
@@ -128,6 +141,10 @@
         // GeoJSON データを取得（しばらく使わないのでここではawaitしない）
         const geojson = fetchMapData();
 
+        // まずヘッダーの警報スタイルをリセットしておく
+        headerCssClass.value = null;
+        updateAppHeaderClass(null);
+
         // Debug flag
         isDummyData.value = props.isDebug;
         const quakeData = await fetchQuakeData(eventId.value, props.isDebug);
@@ -137,6 +154,16 @@
         magnitude.value = dispHypocenter ? quakeData.earthquake.hypocenter.magnitude : "?";
         depth.value = dispHypocenter ? quakeData.earthquake.hypocenter.depth : "?";
         hypocenterLabel.value = dispHypocenter ? quakeData.earthquake.hypocenter.name : "調査中";
+
+        if (quakeData.earthquake.domesticTsunami === "Watch") {
+            headerCssClass.value = "tsunami-watch";
+        } else if (quakeData.earthquake.domesticTsunami === "Warning") {
+            headerCssClass.value = "tsunami-warning";
+        } else {
+            headerCssClass.value = null;
+        }
+
+        updateAppHeaderClass(headerCssClass.value);
 
         if (depth.value === -1) {
             depth.value = "?";
