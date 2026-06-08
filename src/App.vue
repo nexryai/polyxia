@@ -46,14 +46,6 @@
                 border-bottom: solid transparent 1px;
             }
 
-            &.tsunami-watch {
-                color: #8f0000;
-            }
-
-            &.tsunami-warning {
-                color: #8f0000;
-            }
-
             & .active {
                 color: black;
                 font-weight: bold;
@@ -79,5 +71,13 @@
         margin-top: 52px;
         width: 100%;
         height: 100%;
+    }
+
+    .tsunami-watch {
+        color: #8f0000;
+    }
+
+    .tsunami-warning {
+        color: #8f0000;
     }
 </style>
