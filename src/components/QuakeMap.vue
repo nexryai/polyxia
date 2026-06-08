@@ -172,8 +172,7 @@
                 tsunamiStatus.value = TsunamiStatus.UNKNOWN;
         }
 
-        // 国内でWarningがあるなら海外からの津波は無視
-        if (quakeData.earthquake.foreignTsunami !== "None" && quakeData.earthquake.foreignTsunami !== "Unknown" && tsunamiStatus.value !== TsunamiStatus.WARNING) {
+        if (quakeData.issue.type === "Foreign") {
             if (quakeData.earthquake.maxScale === -1) {
                 isForeignQuake = true;
             }
