@@ -106,7 +106,7 @@
     };
 
     const updateAppHeaderClass = (className: string | null) => {
-        const header = document.querySelector("header");
+        const header = document.getElementById("nav-item-tsunami");
         if (!header) {
             return;
         }

@@ -8,7 +8,7 @@
         <nav>
             <span class="nav-title">Polyxia</span>
             <RouterLink class="item" exact-active-class="active" to="/">QuakeNow</RouterLink>
-            <RouterLink class="item" exact-active-class="active" to="/tsunami">津波情報</RouterLink>
+            <RouterLink id="nav-item-tsunami" class="item" exact-active-class="active" to="/tsunami">津波情報</RouterLink>
         </nav>
         <div class="header-right"><RouterLink class="item" exact-active-class="active" to="/about">About</RouterLink></div>
     </header>
@@ -46,6 +46,14 @@
                 border-bottom: solid transparent 1px;
             }
 
+            &.tsunami-watch {
+                color: #8f0000;
+            }
+
+            &.tsunami-warning {
+                color: #8f0000;
+            }
+
             & .active {
                 color: black;
                 font-weight: bold;
@@ -64,14 +72,6 @@
                 color: black;
                 font-weight: bold;
             }
-        }
-
-        &.tsunami-watch {
-            color: #8f0000;
-        }
-
-        &.tsunami-warning {
-            color: #8f0000;
         }
     }
 
