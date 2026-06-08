@@ -74,38 +74,44 @@
     }
 
     @keyframes pulse-glow-watch {
-        0%, 100% {
+        0%,
+        100% {
             opacity: 0.6;
             text-shadow: 0 0 4px #8f0000;
         }
         50% {
             opacity: 1;
-            text-shadow: 0 0 4px #8f0000, 0 0 12px #ff4d4d, 0 0 20px #ff4d4d;
+            text-shadow:
+                0 0 4px #8f0000,
+                0 0 12px #ff4d4d,
+                0 0 20px #ff4d4d;
         }
     }
 
     @keyframes pulse-glow-warning {
-        0%, 100% {
+        0%,
+        100% {
             opacity: 0.6;
             text-shadow: 0 0 4px #e60000;
         }
         50% {
             opacity: 1;
-            text-shadow: 0 0 4px #e60000, 0 0 12px #ff3333, 0 0 25px #ff3333;
+            text-shadow:
+                0 0 4px #e60000,
+                0 0 12px #ff3333,
+                0 0 25px #ff3333;
         }
     }
 
     /* 注意報 (Watch) */
     .tsunami-watch {
         color: #8f0000;
-        font-weight: bold;
         animation: pulse-glow-watch 3s ease-in-out infinite;
     }
 
     /* 警報 (Warning) */
     .tsunami-warning {
         color: #e60000;
-        font-weight: bold;
         animation: pulse-glow-warning 2.2s ease-in-out infinite;
     }
 </style>
